@@ -1,19 +1,55 @@
-# client_normal.py
-import socket
+from socket import *
+import sys
 
-SERVER_IP = '127.0.0.1'  # Adresse du relai, pas du serveur direct
-SERVER_PORT = 5012       # Port du relai
+def client(relay_addr, relay_port):
+    '''Client TCP qui se connecte au relai avec l'addresse ip et port entré en ligne de commande en paramètre'''
+    try:
+        # Créer le socket TCP
+        clientSocket = socket(AF_INET, SOCK_STREAM)
+        
+        # Se connecter au relai
+        clientSocket.connect((relay_addr, relay_port))
+        print(f"Connecté au relai sur {relay_addr}:{relay_port}")
+        
+        # Envoyer plusieurs messages
+        while True:
+            message = input('Message à envoyer (ou "quit" pour arrêter): ')
+            
+            if message.lower() == 'quit':
+                break
+            
+            # Envoyer le message
+            clientSocket.sendall(message.encode('utf-8'))
+            
+            # Recevoir la réponse
+            response = clientSocket.recv(2048)
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
-    client_socket.connect((SERVER_IP, SERVER_PORT))
-    print(f"Connecté à {SERVER_IP}:{SERVER_PORT}")
+            if not response:  # Vérifier si la réponse n'est pas vide
+                print("Serveur déconnecté")
+                break
 
-    while True:
-        message = input("Votre message (ou 'quit' pour sortir) : ")
-        if message.lower() == 'quit':
-            break
+            print(f"Réponse reçue: {response.decode('utf-8')}")
 
-        client_socket.sendall(message.encode('utf-8'))
+    except OSError as e:
+        print(f"Erreur réseau: {e}")
 
-        data = client_socket.recv(1024)
-        print("Réponse :", data.decode('utf-8'))
+    except gaierror:
+        print("Erreur liée à l'adresse")
+
+    except timeout:
+        print("Délai d'attente expiré")
+
+    finally:
+        # Fermer la connexion
+        clientSocket.close()
+        print("Connexion fermée")
+
+if __name__ == "__main__":
+    #Gestion du pb d'arguments
+    if len(sys.argv) != 3:
+        print("Il faut entrer l'adresse IP puis le port du relai")
+        sys.exit(1)
+    
+    relai_adr = sys.argv[1]
+    relai_port = int(sys.argv[2])
+    client(relai_adr, relai_port)
