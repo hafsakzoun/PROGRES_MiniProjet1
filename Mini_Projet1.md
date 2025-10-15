@@ -21,7 +21,8 @@ Script qui implémente un *serveur relais HTTP* interceptant les requêtes du cl
 
 **Usage** : lance le script 
 
-> ex: python3 relai_http_cache.py 9000 127.0.0.1 8081    
+> Relai: python3 relai_http_cache.py 9000 127.0.0.1 8081
+> Serveur: python3 serveur_relai_http.py 8081  
 
 **Comment** :  
 
