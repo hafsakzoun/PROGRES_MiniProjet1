@@ -26,7 +26,7 @@ def search_uri(search_term):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage : python3 audit_http_log.py <mot_ou_URI>")
+        print("Usage : python3 recherche_log.py <mot_ou_URI>")
         sys.exit(1)
 
     search_term = sys.argv[1]
