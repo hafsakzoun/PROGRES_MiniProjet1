@@ -47,13 +47,13 @@ def handle_client(socketClient, serverName, serverPort):
         serverSocket.close()
         print("Connexion fermée")
 
-def relai(relay_port, server_name, server_port):
+def relai(relay_port, server_addr, server_port):
     '''Relai TCP'''
     try:
         relaySocket = socket(AF_INET, SOCK_STREAM)
         relaySocket.bind(('', relay_port))
         relaySocket.listen(5)
-        print(f'Relai prêt sur le port {relay_port}, pour le serveur {server_name}:{server_port}')
+        print(f'Relai prêt sur le port {relay_port}, pour le serveur {server_addr}:{server_port}')
 
         while True:
             # Accepter la connexion du client
@@ -61,7 +61,7 @@ def relai(relay_port, server_name, server_port):
             print(f"Connexion établie avec le client : {addr}")
 
             # Pour chaque client, on crée un thread différent
-            client_thread = threading.Thread(target=handle_client, args=(clientSocket, server_name, server_port))
+            client_thread = threading.Thread(target=handle_client, args=(clientSocket, server_addr, server_port))
             client_thread.start()
 
     except OSError as e:
@@ -84,6 +84,6 @@ if __name__ == "__main__":
         sys.exit(1)
     
     relay_port = int(sys.argv[1])
-    server_name = sys.argv[2]
+    server_addr = sys.argv[2]
     server_port = int(sys.argv[3])
-    relai(relay_port, server_name, server_port)
+    relai(relay_port, server_addr, server_port)
