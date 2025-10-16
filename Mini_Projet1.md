@@ -198,6 +198,36 @@ Pareil pour le client s'il fait :
 
 ## Question 4 : Tests
 
-Les fonctions ont été testé individuellement et il n'y a aucun problème.
+1. Tester le serveur HTTP:
 
-Pour les différents relai, il faut changer les numéros de ports dans les programmes pour les connecter au relai/serveur adéquat, on enchaîne les relais dans l'ordre suivant : client -> relai_http_cache, relai_http_cache -> relai_sniffeur, relai_sniffeur -> relai_censeur, relai_censeur -> serveur_relai_http
+> python3 serveur_relai_http.py 8080
+
+2. Tester le relai avec cache (ex: port 9090)
+Dans un premier terminal :
+> python3 relai_http_cache.py 9090 127.0.0.1 8080
+Dans un second terminal :
+> curl -i http://127.0.0.1:9090/index.html
+ou
+> curl -i http://127.0.0.1:9090/main.html
+
+Pour vérifier le contenu du cache :
+> cat cache.json
+
+3. Tester le relai sniffeur et la recherche dans le log:
+
+Lancer le sniffeur (par exemple sur le port 9091) :
+> python3 relai_sniffeur.py 9091 127.0.0.1 8080
+
+Dans un autre terminal, effectuer une requête :
+
+> curl -i http://127.0.0.1:9091/index.html
+ou
+> curl -i http://127.0.0.1:9091/main.html
+
+Vérifier les logs générés :
+
+> cat http_sniffer_log.json
+
+Rechercher une URI spécifique dans le log :
+
+> python3 recherche_log.py index.html
