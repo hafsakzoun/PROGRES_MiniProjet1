@@ -32,7 +32,7 @@ Le but de cette question est d’implémenter en Python un relais HTTP capable d
 
 > **Relai HTTP avec cache** :
 
-- Le fonctionnement du relai est comme suit:  
+- Le fonctionnement du relai-cache est comme suit:  
 Quand un client adresse une requête GET, le relais extrait l’URI(par exemple “/index.html”) demandée et consulte si elle est déjà présente dans son cache Si la réponse correspondante est trouvée et n’est pas expirée (c’est-à-dire si elle a une durée de vie inférieure à 60 secondes), elle est renvoyée au client sans interroger le serveur d’origine. Dans le cas d’une première requête ou si la réponse précédemment enregistrée est périmée, le relais transmet la demande au serveur HTTP et reçoit la réponse. Celle-ci est alors conservée dans le cache et renvoyée au client. Le cache est mémorisé sous forme de **dictionnaire Python**, dans lequel chaque entrée contient **la réponse HTTP complète encodée en base64** (permettant une sauvegarde en fichier JSON) ainsi que l’**horodatage** de cette entrée. Ce cache est ensuite enregistré automatiquement dans un fichier nommé *cache.json*, que le programme recharge lors de son exécution pour récupérer les données préalablement mises en cache.
 
 >Importations:
@@ -81,7 +81,7 @@ Cette question a pour but de réaliser en python un **relai HTTP sniffeur**. En 
 
 > **Relai HTTP avec sniffeur**
 
-- Le fonctionnement du relai avec sniffeur est comme suit: 
+- Le fonctionnement du relais‑sniffeur est le suivant: 
 Le script élabore un serveur relais multithread, situé entre les clients et le serveur HTTP réel, sur un port donné. Pour chaque client connecté, un thread spécifique est créé, dont le rôle est de gérer la communication entre le client et le serveur. À la réception d’une requête GET, le serveur relais transfert la requête au serveur HTTP, récupère la réponse complète, et si celle-ci n’est pas nulle, il log au format JSON l’adresse IP du client, l’URI demandée, **la taille de la réponse** et **l’horodatage**. C’est enfin cette réponse qui est transmise au client, garantissant ainsi un relais des requêtes effectuées.
 Le fichier *http_sniffer_log.json** est utilisé pour stocker toutes les informations de log et est mis à jour de manière thread-safe pour éviter les conflits lors des accès concurrents.
 
@@ -105,7 +105,7 @@ Le fichier *http_sniffer_log.json** est utilisé pour stocker toutes les informa
 - Gère la fermeture propre du relais en cas d’interruption (Ctrl+C).
 
 **Serveur HTTP :**
-Le serveur HTTP reste identique à celui de la question 1 ;
+Le serveur HTTP reste identique à celui de la question 1.
 
 **Recherche dans le log: recherche_log.py** :
 
