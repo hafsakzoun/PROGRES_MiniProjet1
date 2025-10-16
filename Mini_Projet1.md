@@ -152,7 +152,7 @@ Le script lit le fichier de log JSON http_sniffer_log.json et récupère le mot 
 
 Notre relai fait office de censeur HTTP maintenant, c'est-à-dire qu'il renvoie Interdit lorsque le client demande un site figurant dans la liste de sites interdits.
 
-On utilise le même client et le serveur de l'exercice 1. Pour l'utilisation, c'est exactement comme l'exercice 1 sauf qu'on utilise le fichier relai_censeur.py.
+On utilise le même client de l'exercice 1 et le serveur_relai_http de l'exercice 2. Pour l'utilisation, c'est exactement comme l'exercice 1 sauf qu'on utilise le fichier relai_censeur.py.
 
 > fonctions 
 
