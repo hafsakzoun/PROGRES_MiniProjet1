@@ -200,4 +200,4 @@ Pareil pour le client s'il fait :
 
 Les fonctions ont été testé individuellement et il n'y a aucun problème.
 
-Pour les différents relai, il faut changer les numéros de ports dans les programmes pour les connecter au relai/serveur adéquat, on enchaîne dans l'ordre suivant : client -> relai_http_cache, relai_http_cache -> relai_sniffeur, relai_sniffeur -> relai_censeur, relai_censeur -> serveur_relai_http
+Pour les différents relai, il faut changer les numéros de ports dans les programmes pour les connecter au relai/serveur adéquat, on enchaîne les relais dans l'ordre suivant : client -> relai_http_cache, relai_http_cache -> relai_sniffeur, relai_sniffeur -> relai_censeur, relai_censeur -> serveur_relai_http
