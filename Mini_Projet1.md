@@ -195,3 +195,9 @@ Le serveur renverra :
 
 Pareil pour le client s'il fait :
 > GET /voiranime/naruto/episode50 HTTP/1.1
+
+## Question 4 :
+
+Les fonctions ont été testé individuellement et il n'y a aucun problème.
+
+Pour les différents relai, il faut changer les numéros de ports dans les programmes pour les connecter au relai/serveur adéquat, on enchaîne dans l'ordre suivant : client -> relai_http_cache, relai_http_cache -> relai_sniffeur, relai_sniffeur -> relai_censeur, relai_censeur -> serveur_relai_http
