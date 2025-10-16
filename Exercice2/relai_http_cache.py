@@ -26,10 +26,10 @@ def load_cache():
             with open(CACHE_FILE, "r") as f:
                 data = json.load(f)
                 for uri, value in data.items():
-                    # Décoder le contenu base64 en bytes
                     cache[uri] = {
                         "response": base64.b64decode(value["response"]),
-                        "timestamp": value["timestamp"]
+                        "timestamp": value["timestamp"],
+                        "content_type": value.get("content_type", "unknown")
                     }
             print(f"[INFO] Cache chargé depuis {CACHE_FILE} ({len(cache)} entrées)")
         except Exception as e:
@@ -47,10 +47,11 @@ def save_cache():
         for uri, value in cache.items():
             data_to_save[uri] = {
                 "response": base64.b64encode(value["response"]).decode('utf-8'),
-                "timestamp": value["timestamp"]
+                "timestamp": value["timestamp"],
+                "content_type": value.get("content_type", "unknown")
             }
         with open(CACHE_FILE, "w") as f:
-            json.dump(data_to_save, f)
+            json.dump(data_to_save, f, indent=4)
         print(f"[INFO] Cache sauvegardé dans {CACHE_FILE} ({len(cache)} entrées)")
     except Exception as e:
         print(f"[ERREUR] Sauvegarde du cache : {e}")
@@ -114,9 +115,25 @@ def handle_client(socketClient, serverName, serverPort):
                     pass
                 # Stocker la réponse dans le cache
                 if response:
-                    cache[uri] = {"response": response, "timestamp": time.time()}
+                    # Extraire le type de contenu depuis les headers HTTP
+                    content_type = "unknown"
+                    headers_end = response.find(b"\r\n\r\n")
+                    if headers_end != -1:
+                        headers = response[:headers_end].decode('utf-8', errors='ignore')
+                        match = re.search(r"Content-Type:\s*([^\r\n]+)", headers, re.IGNORECASE)
+                        if match:
+                            content_type = match.group(1).strip()
+
+                    # Normaliser l'URI pour le cache (toujours chemin relatif)
+                    normalized_uri = re.sub(r"^http://[^/]+", "", uri)
+
+                    cache[normalized_uri] = {
+                        "response": response,
+                        "timestamp": time.time(),
+                        "content_type": content_type
+                    }
                     save_cache()
-                    print(f"[CACHE] Réponse stockée pour {uri} (taille: {len(response)} octets)")
+                    print(f"[CACHE] Réponse stockée pour {normalized_uri} ({len(response)} octets, type: {content_type})")
                 # Transmettre la réponse au client
                 socketClient.sendall(response)
 
