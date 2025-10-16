@@ -51,16 +51,16 @@ def handle_client(socketClient, client_addr, serverName, serverPort):
 
             print(f"Message reçu du client: {message.decode('utf-8')}")
 
-            # Envoyer le message au serveur final
+            # Envoyer le message au serveur
             serverSocket.sendall(message)
 
             #Reception de la reponse du serveur
             response = serverSocket.recv(2048)
             if not response:
-                print("Serveur final déconnecté")
+                print("Serveur déconnecté")
                 break
 
-            print(f"Réponse reçue du serveur final: {response.decode('utf-8')}")
+            print(f"Réponse reçue du serveur : {response.decode('utf-8')}")
 
             # Envoyer la réponse au client
             socketClient.sendall(response)
@@ -112,10 +112,10 @@ def relai(relay_port, server_name, server_port):
 if __name__ == "__main__":
     #Gestion du pb d'arguments
     if len(sys.argv) != 4:
-        print("Il faut entrer le numero du port du relai, l'adresse IP puis le port du serveur final")
+        print("Il faut entrer le numero du port du relai, l'adresse IP puis le port du serveur")
         sys.exit(1)
     
     relay_port = int(sys.argv[1])
-    server_name = sys.argv[2]
+    server_addr = sys.argv[2]
     server_port = int(sys.argv[3])
-    relai(relay_port, server_name, server_port)
+    relai(relay_port, server_addr, server_port)
