@@ -152,7 +152,7 @@ Le script lit le fichier de log JSON http_sniffer_log.json et récupère le mot 
 
 Notre relai fait office de censeur HTTP maintenant, c'est-à-dire qu'il renvoie Interdit lorsque le client demande un site figurant dans la liste de sites interdits.
 
-On utilise le même client et le serveur de l'exercice 1. Pour l'utilisation, c'est exactement comme l'exercice 1 sauf qu'on utilise le fichier relaiCenseur.py.
+On utilise le même client et le serveur de l'exercice 1. Pour l'utilisation, c'est exactement comme l'exercice 1 sauf qu'on utilise le fichier relai_censeur.py.
 
 > fonctions 
 
@@ -169,7 +169,7 @@ On utilise le même client et le serveur de l'exercice 1. Pour l'utilisation, c'
 - Gère la communication entre le serveur HTTP et un client
 - Charge la blacklist
 - Reçoit les requêtes du client
-- Si la requête commence par un GET, alors on regarde si l'URI contient un mot présent dans la blacklist. Si le client entre une requête valide, alors le relai transmet la requête au serveur, le serveur renvoie la requête en majuscule et le relai retransmet la réponse au client. Dans le cas, où le client demande un site interdit, il recevra la réponse "INTERDIT" et sera noté dans le fichier event.log et le serveur n'est jamais contacté.
+- Si la requête commence par un GET, alors on regarde si l'URI contient un mot présent dans la blacklist. Si le client entre une requête valide, alors le relai transmet la requête au serveur, le serveur renvoie HTTP/1.1 404 Not Found si la page n'est pas trouvé, sinon elle renvoie la page. Dans le cas, où le client demande un site interdit, il recevra la réponse "INTERDIT" et sera noté dans le fichier event.log et le serveur n'est jamais contacté.
 - Sinon, le relai transmet juste la requête et la réponse.
 - Ferme les connexions à chaque fin de session
 
@@ -185,7 +185,7 @@ Si le client fait :
 > GET /index.html HTTP/1.1
 
 Le serveur renverra : 
-> GET /INDEX.HTML HTTP/1.1
+> HTTP/1.1 404 Not Found
 
 Si le client fait : 
 > GET /instagram/user/pomme HTTP/1.1
