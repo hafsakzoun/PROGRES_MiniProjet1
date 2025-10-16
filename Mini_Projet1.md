@@ -21,19 +21,19 @@ Client ⇄ [ Relai TCP ] ⇄ Serveur
 
 #### Q1.
 
-Pour le fichier serveur.py et client.py, nous avons repris la même base que le TME1 mais nous l'avons améliorer avec la gestion des exceptions vu en cours, ainsi qu'en ajoutant les arguments à saisir par ligne de commande.
+Pour le fichier serveur.py et client.py, nous avons repris la même base que le TME1 mais nous l'avons améliorer avec la gestion des exceptions vues en cours (OSError, gaierror, timeout), ainsi qu'en ajoutant les arguments à saisir par ligne de commande.
 
 Lorsque le client saisi son message, le serveur renvoie le message en majuscule via le relai.
 
 On utilise un port différent pour le serveur et pour le relai pour éviter que le serveur communique directement avec le client.
 
-Lancement des fichiers (sur des terminaux distincts): 
+> **Usage** : Lancement des fichiers (sur des terminaux distincts): 
 
-1) Lancer le fichier serveur.py
+1) Lancer le fichier serveur.py <port_serveur>
 > Ex : python3 serveur.py 4444
-2) Lancer le fichier relai.py
+2) Lancer le fichier relai.py <port_relai> <adresse_serveur> <port_serveur>
 > Ex : python3 relai.py 5555 localhost 4444
-3) Lancer le fichier client.py
+3) Lancer le fichier client.py <adresse_relai> <port_relai>
 > Ex : python3 client.py localhost 5555
 
 Les 3 fichiers affichent les messages envoyés et reçu.
@@ -148,17 +148,36 @@ Le serveur HTTP reste identique à celui de la question 1.
 Le script lit le fichier de log JSON http_sniffer_log.json et récupère le mot clé ou l’URI passé en ligne commande. Pour chaque entrée, il extrait l’adresse IP du client, l’URI demandée et la taille de la réponse. Si l’URI contient le mot clé et que la réponse n’est pas vide, ces informations sont ajoutées aux résultats qui seront ensuite affichés sous la forme Client → URI (octets). Si aucun résultat ne correspond, cela sera signalé. Le script gère également le cas où le fichier JSON est inexistant ou mal formé.
 
 
-#### Q3.
+#### Question 3 : Relai avec censeur HTTP
 
 Notre relai fait office de censeur HTTP maintenant, c'est-à-dire qu'il renvoie Interdit lorsque le client demande un site figurant dans la liste de sites interdits.
 
 On utilise le même client et le serveur de l'exercice 1. Pour l'utilisation, c'est exactement comme l'exercice 1 sauf qu'on utilise le fichier relaiCenseur.py.
 
-Nous avons créer un fichier interdit.txt contenant les sites interdits et nous l'avons passé dans l'argument de la fonction load_blacklist qui sert à charger le fichier blacklist. 
+> fonctions 
 
-Nous avons aussi une fonction log_event utilisant un fichier event.log qu'on a crée par défaut. Lorsqu'un client essaie d'accéder à un site interdit, on note les informations du client, la date et l'heure, et la requête qu'il a fait, pour créer une historique de tentatives d'accès. 
+**Fonction load_backlist(filename="interdit.txt"):**
+- Charge la liste des sites interdits depuis un fichier texte, ici nous avons passé interdit.txt en paramètre par défaut ;
+- Chaque ligne du fichier contient un mot-clé à bloquer (ex: instagram);
 
-Si le client entre une requête valide, alors la requête en majuscule est renvoyée. Dans le cas, où le client demande un site interdit, il recevra la réponse "INTERDIT" et sera noté dans le fichier event.log.
+**Fonction log_event(event:str):**
+- Enregistre un événement dans le fichier event.log qu'on a crée par défaut ;
+- Chaque entrée est sous format : horodatage, l'adresse IP du client et l'URI demandée ;
+- Sert à créer un historique des tentatives d'accès aux sites interdits.
+
+**Fonction handle_client(socketClient, client_addr, server_addr, serverPort):**
+- Gère la communication entre le serveur HTTP et un client
+- Charge la blacklist
+- Reçoit les requêtes du client
+- Si la requête commence par un GET, alors on regarde si l'URI contient un mot présent dans la blacklist. Si le client entre une requête valide, alors le relai transmet la requête au serveur, le serveur renvoie la requête en majuscule et le relai retransmet la réponse au client. Dans le cas, où le client demande un site interdit, il recevra la réponse "INTERDIT" et sera noté dans le fichier event.log et le serveur n'est jamais contacté.
+- Sinon, le relai transmet juste la requête et la réponse.
+- Ferme les connexions à chaque fin de session
+
+**Fonction relai(relay_port, server_addr, server_port):**
+- Lance le serveur multithreadé ;
+- Ecoute sur le port passé en paramètre
+- Crée un nouveau thread pour chaque client connecté avec la fonction handle_client()
+- Fermeture avec CLTR+C
 
 Exemple de requête autorisée et bloquée : 
 
