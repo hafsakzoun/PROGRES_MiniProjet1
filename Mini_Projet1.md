@@ -196,7 +196,7 @@ Le serveur renverra :
 Pareil pour le client s'il fait :
 > GET /voiranime/naruto/episode50 HTTP/1.1
 
-## Question 4 :
+## Question 4 : Tests
 
 Les fonctions ont été testé individuellement et il n'y a aucun problème.
 
