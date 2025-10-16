@@ -148,7 +148,7 @@ Le serveur HTTP reste identique à celui de la question 1.
 Le script lit le fichier de log JSON http_sniffer_log.json et récupère le mot clé ou l’URI passé en ligne commande. Pour chaque entrée, il extrait l’adresse IP du client, l’URI demandée et la taille de la réponse. Si l’URI contient le mot clé et que la réponse n’est pas vide, ces informations sont ajoutées aux résultats qui seront ensuite affichés sous la forme Client → URI (octets). Si aucun résultat ne correspond, cela sera signalé. Le script gère également le cas où le fichier JSON est inexistant ou mal formé.
 
 
-#### Question 3 : Relai avec censeur HTTP
+## Question 3 : Relai avec censeur HTTP
 
 Notre relai fait office de censeur HTTP maintenant, c'est-à-dire qu'il renvoie Interdit lorsque le client demande un site figurant dans la liste de sites interdits.
 
