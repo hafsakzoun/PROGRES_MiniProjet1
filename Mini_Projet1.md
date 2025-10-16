@@ -19,6 +19,42 @@ Client ⇄ [ Relai TCP ] ⇄ Serveur
 
 # Exercice 1
 
+#### Q1.
+
+Pour le fichier serveur.py et client.py, nous avons repris la même base que le TME1 mais nous l'avons améliorer avec la gestion des exceptions vu en cours, ainsi qu'en ajoutant les arguments à saisir par ligne de commande.
+
+Lorsque le client saisi son message, le serveur renvoie le message en majuscule via le relai.
+
+On utilise un port différent pour le serveur et pour le relai pour éviter que le serveur communique directement avec le client.
+
+Lancement des fichiers (sur des terminaux distincts): 
+
+1) Lancer le fichier serveur.py
+> Ex : python3 serveur.py 4444
+2) Lancer le fichier relai.py
+> Ex : python3 relai.py 5555 localhost 4444
+3) Lancer le fichier client.py
+> Ex : python3 client.py localhost 5555
+
+Les 3 fichiers affichent les messages envoyés et reçu.
+
+Pour que plusieurs clients puissent envoyer des messages simultanéments et que le serveur puisse tous les recevoir sans avoir un blocage, nous avons défini une fonction handle_client dans le fichier relai.py et dans le fichier serveur.py
+
+Dans le fichier serveur.py : 
+
+La fonction handle_client permet de récupérer plusieurs messages d'un client et de tous les renvoyer. Dans la fonction serveur, on utilise threading.Thread pour créer différents threads afin d'avoir plusieurs clients en même temps.
+
+Dans le fichier relai.py : 
+
+La fonction handle_client sert à créer un socket pour que chaque client puisse se connecter au serveur et permet l'échange de message entre le serveur et le client.
+
+On fait le multi-threading dans la fonction relai avec threading.Thread pour que chaque client a son propre thread.
+
+#### Q2 et Q3. 
+
+Pour tester, on a utilisé deux machines différentes et plusieurs clients (3 clients), et tout est fonctionnel, les messages s'envoient tous sans se bloquer et le serveur traite chaque client 1 par 1. 
+
+Pour plusieurs clients, il suffit d'ouvrir plusieurs terminaux et changer les adresses, comme remplacer localhost par 127.0.0.1 ou 0.0.0.0
 
 # Exercice 2
 
@@ -110,3 +146,33 @@ Le serveur HTTP reste identique à celui de la question 1.
 **Recherche dans le log: recherche_log.py** :
 
 Le script lit le fichier de log JSON http_sniffer_log.json et récupère le mot clé ou l’URI passé en ligne commande. Pour chaque entrée, il extrait l’adresse IP du client, l’URI demandée et la taille de la réponse. Si l’URI contient le mot clé et que la réponse n’est pas vide, ces informations sont ajoutées aux résultats qui seront ensuite affichés sous la forme Client → URI (octets). Si aucun résultat ne correspond, cela sera signalé. Le script gère également le cas où le fichier JSON est inexistant ou mal formé.
+
+
+#### Q3.
+
+Notre relai fait office de censeur HTTP maintenant, c'est-à-dire qu'il renvoie Interdit lorsque le client demande un site figurant dans la liste de sites interdits.
+
+On utilise le même client et le serveur de l'exercice 1. Pour l'utilisation, c'est exactement comme l'exercice 1 sauf qu'on utilise le fichier relaiCenseur.py.
+
+Nous avons créer un fichier interdit.txt contenant les sites interdits et nous l'avons passé dans l'argument de la fonction load_blacklist qui sert à charger le fichier blacklist. 
+
+Nous avons aussi une fonction log_event utilisant un fichier event.log qu'on a crée par défaut. Lorsqu'un client essaie d'accéder à un site interdit, on note les informations du client, la date et l'heure, et la requête qu'il a fait, pour créer une historique de tentatives d'accès. 
+
+Si le client entre une requête valide, alors la requête en majuscule est renvoyée. Dans le cas, où le client demande un site interdit, il recevra la réponse "INTERDIT" et sera noté dans le fichier event.log.
+
+Exemple de requête autorisée et bloquée : 
+
+Si le client fait :
+> GET /index.html HTTP/1.1
+
+Le serveur renverra : 
+> GET /INDEX.HTML HTTP/1.1
+
+Si le client fait : 
+> GET /instagram/user/pomme HTTP/1.1
+
+Le serveur renverra :
+> INTERDIT
+
+Pareil pour le client s'il fait :
+> GET /voiranime/naruto/episode50 HTTP/1.1
