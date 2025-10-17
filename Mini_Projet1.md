@@ -152,7 +152,7 @@ Le script lit le fichier de log JSON http_sniffer_log.json et récupère le mot 
 
 Notre relai fait office de censeur HTTP maintenant, c'est-à-dire qu'il renvoie Interdit lorsque le client demande un site figurant dans la liste de sites interdits.
 
-On utilise le même client de l'exercice 1 et le serveur_relai_http de l'exercice 2. Pour l'utilisation, c'est exactement comme l'exercice 1 sauf qu'on utilise le fichier relai_censeur.py.
+On utilise le serveur_relai_http de l'exercice 2. Pour l'utilisation, c'est exactement comme les questions précédentes sauf qu'on utilise le fichier relai_censeur.py.
 
 > fonctions 
 
@@ -182,19 +182,31 @@ On utilise le même client de l'exercice 1 et le serveur_relai_http de l'exercic
 Exemple de requête autorisée et bloquée : 
 
 Si le client fait :
-> GET /index.html HTTP/1.1
+> curl -i http://127.0.0.1:9091/index.html
 
 Le serveur renverra : 
-> HTTP/1.1 404 Not Found
+> HTTP/1.1 200 OK
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Main Relai HTTP</title>
+</head>
+<body>
+    <h1>Bonjour, relai HTTP !</h1>
+    <p>Cette page est servie par le serveur HTTP (index).</p>
+</body>
+</html>
 
 Si le client fait : 
-> GET /instagram/user/pomme HTTP/1.1
+> curl -i http://127.0.0.1:9091/instagram.html
 
-Le serveur renverra :
-> INTERDIT
+Le relai renverra INTERDIT mais sur le terminal de client, ça affichera : 
+> curl: (1) Received HTTP/0.9 when not allowed
 
 Pareil pour le client s'il fait :
-> GET /voiranime/naruto/episode50 HTTP/1.1
+> curl -i http://127.0.0.1:9091/voiranime/episode.html
 
 ## Question 4 : Tests
 
@@ -242,9 +254,9 @@ Dans un terminal, lancer le censeur (par exemple sur le port 4444)
 
 Dans un autre terminal, effectuer une requête pour voir que c'est bien interdit : 
 
-> GET /twitter/user/dragon HTTP/1.1
+> curl -i http://127.0.0.1:3105/twitter.html
 
-Vérifier les logs générés et la liste des sites interdits : 
+Vérifier les logs générés et la liste des sites interdits :
 
 > cat event.log
 > cat interdit.txt
@@ -254,9 +266,7 @@ Pour les différents relais, il faut changer les numéros de ports dans les prog
 Exemple : 
 
 Terminal 1 : python3 serveur_relai_http.py 8080
-Terminal 2 : python3 relai_censeur.py 4444 localhost 8080
-Terminal 3 : python3 relai_sniffeur.py 5555 localhost 4444
-Terminal 4 : python3 relai_http_cache 3105 localhost 5555
-Terminal 5 : python3 client.py localhost 3105
-
-puis faire des requêtes comme décrit plus haut
+Terminal 2 : python3 relai_censeur.py 4444 127.0.0.1 8080
+Terminal 3 : python3 relai_sniffeur.py 5555 127.0.0.1 4444
+Terminal 4 : python3 relai_http_cache 3105 127.0.0.1 5555
+Terminal 5 : faire des requêtes comme décrit plus haut comme curl -i http://127.0.0.1:3105/instagram.html
