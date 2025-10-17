@@ -198,6 +198,8 @@ Pareil pour le client s'il fait :
 
 ## Question 4 : Tests
 
+Les différents relais ont été testé individuellement et il n'y a aucun problème.
+
 1. Tester le serveur HTTP:
 
 > python3 serveur_relai_http.py 8080
@@ -231,3 +233,30 @@ Vérifier les logs générés :
 Rechercher une URI spécifique dans le log :
 
 > python3 recherche_log.py index.html
+
+4. Tester le relai censeur et voir les différents fichiers :
+
+Dans un terminal, lancer le censeur (par exemple sur le port 4444)
+
+> python3 relai_censeur.py 4444 127.0.0.1 8080
+
+Dans un autre terminal, effectuer une requête pour voir que c'est bien interdit : 
+
+> GET /twitter/user/dragon HTTP/1.1
+
+Vérifier les logs générés et la liste des sites interdits : 
+
+> cat event.log
+> cat interdit.txt
+
+Pour les différents relais, il faut changer les numéros de ports dans les programmes pour les connecter au relai/serveur adéquat, on enchaîne les relais dans l'ordre suivant : client -> relai_http_cache, relai_http_cache -> relai_sniffeur, relai_sniffeur -> relai_censeur, relai_censeur -> serveur_relai_http
+
+Exemple : 
+
+Terminal 1 : python3 serveur_relai_http.py 8080
+Terminal 2 : python3 relai_censeur.py 4444 localhost 8080
+Terminal 3 : python3 relai_sniffeur.py 5555 localhost 4444
+Terminal 4 : python3 relai_http_cache 3105 localhost 5555
+Terminal 5 : python3 client.py localhost 3105
+
+puis faire des requêtes comme décrit plus haut
